@@ -8,8 +8,8 @@
 :root{--bg:#f5f7fb;--card:#fff;--line:#e5e7eb;--ink:#111827;--muted:#64748b;--green:#16a34a;--blue:#2563eb;--violet:#7c3aed;--amber:#f59e0b;--red:#dc2626;--slate:#334155}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink)}
-.top{position:sticky;top:0;z-index:8;background:#f5f7fbee;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:10px}
-h3{margin:0;font-size:18px}
+.top{position:sticky;top:0;z-index:20;background:#f5f7fbee;backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:8px 10px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px}.settingsBtn{border-radius:999px;padding:8px 12px;background:#ede9fe;color:#5b21b6}.settingsPanel{display:none;margin-top:7px;background:white;border:1px solid var(--line);border-radius:14px;padding:8px;box-shadow:0 10px 26px #0002;max-height:72vh;overflow:auto}.settingsPanel.show{display:block}.settingsGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+h3{margin:0;font-size:18px;line-height:1.15}
 .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 button,select,input{border:0;border-radius:10px;padding:8px 10px;font-weight:850;background:#eef2ff;color:#1e3a8a}
 button.good{background:var(--green);color:white}
@@ -32,7 +32,7 @@ button.ghost{background:#f1f5f9;color:#334155}
 .txt{white-space:pre-wrap;font-size:17px;line-height:1.55;font-weight:620}
 .ko{font-family:Malgun Gothic,"Apple SD Gothic Neo",Arial,sans-serif;font-size:21px;line-height:1.65;font-weight:400;color:#111827}
 .en{color:#374151}
-.float{position:fixed;left:8px;right:8px;bottom:8px;background:#ffffffe8;border:1px solid var(--line);border-radius:15px;padding:8px;box-shadow:0 6px 24px #0002;z-index:9}
+.float{position:fixed;left:8px;right:8px;bottom:8px;background:#ffffffe8;border:1px solid var(--line);border-radius:15px;padding:6px;box-shadow:0 6px 24px #0002;z-index:9}.float .row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.float button{padding:8px 4px;min-height:38px;font-size:12px;border-radius:12px;white-space:nowrap}
 .audioPanel{display:none;background:white;border:1px solid var(--line);border-radius:12px;padding:8px;margin-top:8px}
 audio{width:100%}
 .volBox{display:grid;grid-template-columns:78px 1fr 52px;gap:7px;align-items:center;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:6px 8px;margin:7px 0}
@@ -40,48 +40,47 @@ audio{width:100%}
 .volBox input{width:100%;padding:0}
 .volBox span{font-size:12px;font-weight:900;text-align:right;color:#0f172a}
 .status{font-size:12px;color:#64748b;margin-top:5px}
-@media(max-width:700px){.top{padding:8px}.txt{font-size:16px}.ko{font-size:21px}.wrap{padding-bottom:132px}button,select,input{padding:7px 9px;font-size:13px}}
+@media(max-width:700px){.top{padding:8px}.settingsGrid{grid-template-columns:1fr}.settingsPanel{max-height:68vh}.txt{font-size:16px}.ko{font-size:21px}.wrap{padding-bottom:74px}button,select,input{padding:7px 9px;font-size:13px}.float{padding:6px}.float .row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.float button{font-size:12px;padding:7px 3px;min-height:38px}}
 </style>
 </head>
 <body>
 <div class="top">
-  <h3>HelloMy20 S01E02</h3>
-  <div class="row" style="margin-top:8px">
-    <select id="mode">
-      <option value="vi-readvi-readko-ko">VI Dub → Read VI → Read KO → KO Live</option>
-      <option value="vi-readko-ko">VI Dub → Read KO → KO Live</option>
-      <option value="vi-ko">VI Dub → KO Live</option>
-      <option value="vi">VI Dub only</option>
-      <option value="ko">KO Live only</option>
-      <option value="readko">Read KO only</option>
-    </select>
-    <input id="q" placeholder="Search..." oninput="render()">
-    <button onclick="toggleAudio()">Audio</button>
-    <button onclick="unlockAudio()">Unlock iPhone Audio</button>
-    <button onclick="readKoCurrent()">Read KO</button>
-  </div>
-  <div id="audioPanel" class="audioPanel">
-    <div class="row">
-      <input id="viFile" type="file" accept="audio/*" onchange="loadLocal('vi',this.files[0])">
-      <input id="koFile" type="file" accept="audio/*" onchange="loadLocal('ko',this.files[0])">
-      <button class="ghost" onclick="showAudioPaths()">Audio paths</button>
-    </div>
-    <audio id="engine" controls playsinline webkit-playsinline></audio>
-    <div class="volBox"><label>VI Volume</label><input id="viVol" type="range" min="0" max="200" step="1" value="100"><span id="viVolLabel">100%</span></div>
-    <div class="volBox"><label>KO Volume</label><input id="koVol" type="range" min="0" max="200" step="1" value="100"><span id="koVolLabel">100%</span></div>
-    <div id="audioInfo" class="status"></div>
+  <div class="topbar">
+    <h3>HelloMy20 S01E02</h3>
+    <button class="settingsBtn" onclick="toggleSettings()">Setting</button>
   </div>
   <div id="stat" class="status">Ready.</div>
+  <div id="settingsPanel" class="settingsPanel">
+    <div class="row">
+      <select id="mode">
+        <option value="vi-readvi-readko-ko">VI Dub → Read VI → Read KO → KO Live</option>
+        <option value="vi-readko-ko">VI Dub → Read KO → KO Live</option>
+        <option value="vi-ko">VI Dub → KO Live</option>
+        <option value="vi">VI Dub only</option>
+        <option value="ko">KO Live only</option>
+        <option value="readko">Read KO only</option>
+      </select>
+      <input id="q" placeholder="Search..." oninput="render()">
+      <button onclick="$('q').value='';render()">Clear/Refresh</button>
+      <button onclick="unlockAudio()">Unlock iPhone Audio</button>
+      <button onclick="showAudioPaths()">Audio paths</button>
+      <button onclick="readKoCurrent()">Read KO</button>
+    </div>
+    <div class="settingsGrid">
+      <div class="panel"><b>VI Dub</b><input id="viFile" type="file" accept="audio/*" onchange="loadLocal('vi',this.files[0])"><div class="volBox"><label>VI Volume</label><input id="viVol" type="range" min="0" max="200" step="1" value="100"><span id="viVolLabel">100%</span></div></div>
+      <div class="panel"><b>KO Live</b><input id="koFile" type="file" accept="audio/*" onchange="loadLocal('ko',this.files[0])"><div class="volBox"><label>KO Volume</label><input id="koVol" type="range" min="0" max="200" step="1" value="100"><span id="koVolLabel">100%</span></div></div>
+    </div>
+    <audio id="engine" controls playsinline webkit-playsinline></audio>
+    <div id="audioInfo" class="status"></div>
+  </div>
 </div>
 <div class="wrap"><div id="list"></div></div>
 <div class="float">
   <div class="row">
-    <button onclick="prev()">Prev</button>
     <button class="good" onclick="playCurrent('vi')">VI Dub</button>
     <button onclick="readKoCurrent()">Read KO</button>
     <button class="violet" onclick="playCurrent('ko')">KO Live</button>
-    <button class="warn" onclick="smart()">Smart Flow</button>
-    <button onclick="next()">Next</button>
+    <button class="warn" onclick="smart()">Smart</button>
     <button class="stop" onclick="stopAll()">Stop</button>
   </div>
 </div>
@@ -90,6 +89,7 @@ const project={"version":"SUBTITLE_MASTER_READER_PROJECT","title":"HelloMy20 S01
 let idx=0,stop=false,viUrl='',koUrl='',unlocked=false,token=0;
 const $=id=>document.getElementById(id);
 const engine=()=>$('engine');
+function toggleSettings(){const p=$('settingsPanel');if(p)p.classList.toggle('show')}
 let audioCtx=null,gainNode=null,mediaSource=null,engineKind='vi';
 const VOL_KEY='master_reader_volume_'+String(project.githubSlug||project.title||'reader').replace(/[^A-Za-z0-9._-]+/g,'_');
 
@@ -152,7 +152,7 @@ function initReaderVolumeControls(){
 function loadPaths(){viUrl=pathFor('vi');koUrl=pathFor('ko');applyVisibleVolume('vi');applyVisibleVolume('ko');$('audioInfo').textContent='Paths: '+viUrl+' | '+koUrl}
 function showAudioPaths(){alert('VI: '+viUrl+'\nKO: '+koUrl+'\n\nNếu đặt reader trong thư mục subtitle-master, audio folder thường là ../audio.')}
 function loadLocal(k,f){if(!f)return;if(k==='vi')viUrl=URL.createObjectURL(f);else koUrl=URL.createObjectURL(f);applyVisibleVolume(k);$('audioInfo').textContent='Loaded local '+k+': '+f.name}
-function toggleAudio(){const p=$('audioPanel');p.style.display=p.style.display==='block'?'none':'block'}
+function toggleAudio(){toggleSettings()}
 
 function badgeHtml(b){
   const vi=hasRange('vi',b)?'<span class="badge vi timingBadge">VI '+rangeLabel(b.viRanges)+'</span>':'<span class="badge no">No VI</span>';
